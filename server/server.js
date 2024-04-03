@@ -2,6 +2,10 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const mysql = require("mysql2");
+const path = require("path");
+const dotenv = require("dotenv");
+
+dotenv.config({ path: path.join(__dirname, "./.env") });
 const app = express();
 const port = process.env.PORT || 3001;
 
@@ -22,48 +26,40 @@ function generateId() {
 app.post("/api/registro", (req, res) => {
   const { nome, email, nomeUsuario, senha } = req.body;
 
-  const usuarioExistente = usuarios.find(
-    (user) => user.nomeUsuario === nomeUsuario
-  );
-
-  if (usuarioExistente) {
-    return res.status(400).json({ mensagem: "Nome de usuário já em uso." });
-  }
-
-  const novoUsuario = {
-    id: generateId(),
-    nome,
-    email,
-    nomeUsuario,
-    senha,
-  };
-  usuarios.push(novoUsuario);
-
   db.query(
-    "INSERT INTO usuarios (nome, email, nomeUsuario, senha) VALUES (?, ?, ?, ?)",
-    [nome, email, nomeUsuario, senha],
-    (err, result) => {
+    "SELECT * FROM usuarios WHERE nomeUsuario = ?",
+    [nomeUsuario],
+    (err, results) => {
       if (err) {
-        console.error("Erro ao inserir usuário no banco de dados:", err);
+        console.error("Erro ao buscar usuário no banco de dados:", err);
         return res.status(500).json({ mensagem: "Erro interno do servidor." });
       }
-      return res
-        .status(201)
-        .json({ mensagem: "Usuário registrado com sucesso." });
+
+      if (results.length > 0) {
+        return res.status(400).json({ mensagem: "Nome de usuário já em uso." });
+      }
+
+      db.query(
+        "INSERT INTO usuarios (nome, email, nomeUsuario, senha) VALUES (?, ?, ?, ?)",
+        [nome, email, nomeUsuario, senha],
+        (err, result) => {
+          if (err) {
+            console.error("Erro ao inserir usuário no banco de dados:", err);
+            return res
+              .status(500)
+              .json({ mensagem: "Erro interno do servidor." });
+          }
+          return res
+            .status(201)
+            .json({ mensagem: "Usuário registrado com sucesso." });
+        }
+      );
     }
   );
 });
 
 app.post("/api/login", (req, res) => {
   const { nomeUsuario, senha } = req.body;
-
-  const usuario = usuarios.find((user) => user.nomeUsuario === nomeUsuario);
-
-  if (!usuario || usuario.senha !== senha) {
-    return res
-      .status(401)
-      .json({ mensagem: "Nome de usuário ou senha incorretos." });
-  }
 
   db.query(
     "SELECT * FROM usuarios WHERE nomeUsuario = ? AND senha = ?",
@@ -73,6 +69,7 @@ app.post("/api/login", (req, res) => {
         console.error("Erro ao buscar usuário no banco de dados:", err);
         return res.status(500).json({ mensagem: "Erro interno do servidor." });
       }
+
       if (results.length === 0) {
         return res
           .status(401)
@@ -104,7 +101,6 @@ app.post("/api/anuncios", (req, res) => {
     localizacao,
     imagemMiniatura,
   };
-  anuncios.push(novoAnuncio);
 
   db.query(
     "INSERT INTO anuncios (titulo, descricao, localizacao, imagemMiniatura) VALUES (?, ?, ?, ?)",
@@ -128,7 +124,6 @@ app.post("/api/mensagens", (req, res) => {
     remetente,
     texto,
   };
-  mensagens.push(novaMensagem);
 
   db.query(
     "INSERT INTO mensagens (anuncioId, remetente, texto) VALUES (?, ?, ?)",
