@@ -1,21 +1,32 @@
-"use client";
-import { useState } from "react";
+import axios from "axios";
+import { useEffect, useState } from "react";
 import Anuncio from "./Anuncio";
 import CadastroAnuncio from "./CadastroAnuncio";
-import Mensagens from "./Mensagens";
 import "./styles.css";
 
 function Feed() {
   const [anuncios, setAnuncios] = useState([]);
   const [filtro, setFiltro] = useState("");
-  const [anunciosExibidos, setAnunciosExibidos] = useState(anuncios);
+  const [anunciosExibidos, setAnunciosExibidos] = useState([]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
 
-  const adicionarAnuncio = (novoAnuncio) => {
-    setAnuncios([...anuncios, novoAnuncio]);
-    setAnunciosExibidos([...anuncios, novoAnuncio]);
+  // Função para carregar os anúncios do servidor
+  const carregarAnuncios = async () => {
+    try {
+      const response = await axios.get("http://localhost:3001/api/anuncios");
+      setAnuncios(response.data);
+      setAnunciosExibidos(response.data);
+    } catch (error) {
+      console.error("Erro ao carregar anúncios:", error);
+    }
   };
 
+  // Carregar os anúncios ao montar o componente
+  useEffect(() => {
+    carregarAnuncios();
+  }, []);
+
+  // Função para filtrar os anúncios com base no filtro de busca
   const filtrarAnuncios = () => {
     const termoLowerCase = filtro.toLowerCase();
     const anunciosFiltrados = anuncios.filter((anuncio) => {
@@ -28,19 +39,24 @@ function Feed() {
     setAnunciosExibidos(anunciosFiltrados);
   };
 
+  const abrirModalCadastro = () => {
+    setModalIsOpen(true);
+  };
+
+  const fecharModalCadastro = () => {
+    setModalIsOpen(false);
+  };
+
   return (
     <div>
       <h1 className="feed-header">Anúncios</h1>
-      <button onClick={() => setModalIsOpen(true)} className="feed-button">
+      <button onClick={abrirModalCadastro} className="feed-button">
         Cadastrar Anúncio
       </button>
-      {modalIsOpen && (
-        <CadastroAnuncio
-          onAdicionarAnuncio={adicionarAnuncio}
-          closeModal={() => setModalIsOpen(false)}
-        />
-      )}
-      <Mensagens />
+      <CadastroAnuncio
+        closeModal={fecharModalCadastro}
+        setAnuncios={setAnuncios}
+      />
 
       <div className="feed-search">
         <input

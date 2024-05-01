@@ -13,7 +13,7 @@ const customModalStyles = {
   },
 };
 
-function CadastroAnuncio({ closeModal }) {
+function CadastroAnuncio({ closeModal, setAnuncios }) {
   const [titulo, setTitulo] = useState("");
   const [descricao, setDescricao] = useState("");
   const [localizacao, setLocalizacao] = useState("");
@@ -39,20 +39,37 @@ function CadastroAnuncio({ closeModal }) {
         formData
       );
       if (response.status === 201) {
-        // O anúncio foi criado com sucesso
         closeModal();
         setTitulo("");
         setDescricao("");
         setLocalizacao("");
         setImagem(null);
+
+        // Após o cadastro, carregamos os anúncios novamente para atualizar a lista
+        const anuncios = await carregarAnuncios();
+        setAnuncios(anuncios);
       }
     } catch (error) {
       console.error("Erro ao adicionar o anúncio:", error);
     }
   };
 
+  const carregarAnuncios = async () => {
+    try {
+      const response = await axios.get("http://localhost:3001/api/anuncios");
+      return response.data;
+    } catch (error) {
+      console.error("Erro ao carregar anúncios:", error);
+      return [];
+    }
+  };
+
   return (
-    <Modal isOpen={true} onRequestClose={closeModal} style={customModalStyles}>
+    <Modal
+      isOpen={true} // Definindo isOpen como false para não abrir o modal automaticamente
+      onRequestClose={closeModal}
+      style={customModalStyles}
+    >
       <div className="modal-content">
         <h2 className="modal-title">Cadastro de Anúncio</h2>
         <form onSubmit={handleSubmit}>
