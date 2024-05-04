@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Modal from "react-modal";
 import "./styles.css";
 
@@ -13,11 +13,12 @@ const customModalStyles = {
   },
 };
 
-function CadastroAnuncio({ closeModal, setAnuncios }) {
+function CadastroAnuncio({ setAnuncios, closeModal }) {
   const [titulo, setTitulo] = useState("");
   const [descricao, setDescricao] = useState("");
   const [localizacao, setLocalizacao] = useState("");
   const [imagem, setImagem] = useState(null);
+  const form = useRef();
 
   const handleImagemChange = (e) => {
     const selectedImage = e.target.files[0];
@@ -27,17 +28,19 @@ function CadastroAnuncio({ closeModal, setAnuncios }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const formData = new FormData();
-    formData.append("titulo", titulo);
-    formData.append("descricao", descricao);
-    formData.append("localizacao", localizacao);
-    formData.append("imagem", imagem);
+    const formData = new FormData(form.current);
+
+    console.log("formdata", formData.get("titulo"));
+    console.log("titulo", titulo);
 
     try {
-      const response = await axios.post(
-        "http://localhost:3001/api/anuncios",
-        formData
-      );
+      const response = await axios.post("http://localhost:3001/api/anuncios", {
+        titulo: formData.get("titulo"),
+        descricao: formData.get("descricao"),
+        localizacao: formData.get("localizacao"),
+        // imagem: formData.get("imagem"),
+      });
+
       if (response.status === 201) {
         closeModal();
         setTitulo("");
@@ -65,20 +68,17 @@ function CadastroAnuncio({ closeModal, setAnuncios }) {
   };
 
   return (
-    <Modal
-      isOpen={true} // Definindo isOpen como false para não abrir o modal automaticamente
-      onRequestClose={closeModal}
-      style={customModalStyles}
-    >
+    <Modal isOpen={true} onRequestClose={closeModal} style={customModalStyles}>
       <div className="modal-content">
         <h2 className="modal-title">Cadastro de Anúncio</h2>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} id="cadastro-anuncio" ref={form}>
           <label className="modal-label">Título:</label>
           <input
             type="text"
             value={titulo}
             onChange={(e) => setTitulo(e.target.value)}
             className="modal-input"
+            name="titulo"
           />
 
           <label className="modal-label">Descrição:</label>
@@ -86,6 +86,7 @@ function CadastroAnuncio({ closeModal, setAnuncios }) {
             value={descricao}
             onChange={(e) => setDescricao(e.target.value)}
             className="modal-input"
+            name="descricao"
           />
 
           <label className="modal-label">Localização:</label>
@@ -94,6 +95,7 @@ function CadastroAnuncio({ closeModal, setAnuncios }) {
             value={localizacao}
             onChange={(e) => setLocalizacao(e.target.value)}
             className="modal-input"
+            name="localizacao"
           />
 
           <label className="modal-label">Imagem:</label>
@@ -102,6 +104,7 @@ function CadastroAnuncio({ closeModal, setAnuncios }) {
             accept="image/*"
             onChange={handleImagemChange}
             className="modal-input"
+            name="imagem"
           />
 
           {imagem && (

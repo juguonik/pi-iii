@@ -187,20 +187,22 @@ app.get("/api/anuncios", (req, res) => {
 });
 
 app.post("/api/anuncios", (req, res) => {
-  const { titulo, descricao, localizacao, imagemMiniatura } = req.body;
+  console.log("req", req);
+  console.log("body", req.body);
+  const { titulo, descricao, localizacao, imagem } = req.body;
 
   const novoAnuncio = {
     id: generateId(),
     titulo,
     descricao,
     localizacao,
-    imagemMiniatura,
+    imagemMiniatura: imagem,
   };
   anuncios.push(novoAnuncio);
 
   db.query(
     "INSERT INTO anuncios (titulo, descricao, localizacao, imagemMiniatura) VALUES (?, ?, ?, ?)",
-    [titulo, descricao, localizacao, imagemMiniatura],
+    [titulo, descricao, localizacao, imagem],
     (err, result) => {
       if (err) {
         console.error("Erro ao inserir anúncio no banco de dados:", err);
