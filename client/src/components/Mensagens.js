@@ -1,38 +1,98 @@
-import axios from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import "./styles.css";
 
 function Mensagens() {
-  const [mensagens, setMensagens] = useState([]);
+  const [mostrarMensagens, setMostrarMensagens] = useState(false);
+  const [mensagemSelecionada, setMensagemSelecionada] = useState(null);
+  const [resposta, setResposta] = useState("");
+  const [mensagensLocais] = useState([
+    {
+      id: 1,
+      anuncioTitulo: "Anúncio 1",
+      remetente: "Usuário 1",
+      texto: "Mensagem 1",
+    },
+    {
+      id: 2,
+      anuncioTitulo: "Anúncio 2",
+      remetente: "Usuário 2",
+      texto: "Mensagem 2",
+    },
+    {
+      id: 3,
+      anuncioTitulo: "Anúncio 3",
+      remetente: "Usuário 1",
+      texto: "Mensagem 3",
+    },
+  ]);
 
-  useEffect(() => {
-    axios
-      .get("http://localhost:3001/api/mensagens")
-      .then((response) => {
-        setMensagens(response.data);
-      })
-      .catch((error) => {
-        console.error("Erro ao buscar mensagens:", error);
-      });
-  }, []);
+  const handleSelecionarMensagem = (mensagem) => {
+    setMensagemSelecionada(mensagem);
+  };
+
+  const handleCloseMensagens = () => {
+    setMensagemSelecionada(null);
+    setMostrarMensagens(false);
+  };
+
+  const handleResponder = () => {
+    // Aqui você pode implementar a lógica para enviar a resposta
+    alert(`Resposta para "${mensagemSelecionada.texto}": ${resposta}`);
+    setResposta("");
+  };
 
   return (
     <div className="container">
-      <h2 className="modal-title">Minhas Mensagens</h2>
-      {mensagens.length > 0 ? (
-        <ul>
-          {mensagens.map((mensagem) => (
-            <li key={mensagem.id}>
-              <strong>Anúncio:</strong> {mensagem.anuncioTitulo}
-              <br />
-              <strong>De:</strong> {mensagem.remetente}
-              <br />
-              <strong>Mensagem:</strong> {mensagem.texto}
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>Você não tem mensagens.</p>
+      <button
+        className="minhas-mensagens-button"
+        onClick={() => setMostrarMensagens(true)}
+      >
+        Minhas Mensagens
+      </button>
+      {mostrarMensagens && (
+        <div className="mensagens-container">
+          {mensagemSelecionada ? (
+            <div className="detalhes-mensagem">
+              <div className="mensagem-detalhes">
+                <div className="mensagem-remetente">
+                  {mensagemSelecionada.remetente}
+                </div>
+                <div className="mensagem-texto">
+                  {mensagemSelecionada.texto}
+                </div>
+                <form onSubmit={handleResponder}>
+                  <textarea
+                    value={resposta}
+                    onChange={(e) => setResposta(e.target.value)}
+                    placeholder="Digite sua resposta..."
+                  />
+                  <button type="submit">Responder</button>
+                </form>
+              </div>
+              <button
+                className="fechar-mensagens-button"
+                onClick={handleCloseMensagens}
+              >
+                Fechar
+              </button>
+            </div>
+          ) : (
+            <div className="mensagens-lista">
+              {mensagensLocais.map((mensagem) => (
+                <div
+                  key={mensagem.id}
+                  className="mensagem"
+                  onClick={() => handleSelecionarMensagem(mensagem)}
+                >
+                  <div className="remetente">{mensagem.remetente}</div>
+                  <div className="texto">
+                    Mensagem do usuário {mensagem.remetente}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       )}
     </div>
   );

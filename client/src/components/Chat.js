@@ -1,0 +1,70 @@
+import { useEffect, useRef, useState } from "react";
+import "./styles.css";
+
+function Chat({ onClose, onSubmeter }) {
+  const [mensagem, setMensagem] = useState("");
+  const [mensagens, setMensagens] = useState([]);
+  const chatRef = useRef(null);
+
+  const handleEnviarMensagem = () => {
+    if (mensagem.trim() !== "") {
+      const novaMensagem = {
+        remetente: "usuário", // Aqui você pode definir o remetente como desejar
+        texto: mensagem,
+      };
+
+      // Adiciona a nova mensagem à lista de mensagens
+      setMensagens([...mensagens, novaMensagem]);
+
+      // Chama a função para submeter a mensagem
+      onSubmeter(novaMensagem);
+
+      // Limpa o campo de mensagem
+      setMensagem("");
+    }
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (chatRef.current && !chatRef.current.contains(event.target)) {
+        onClose();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [onClose]);
+
+  return (
+    <div className="modal-container">
+      <div className="modal-content chat" ref={chatRef}>
+        <h2 className="modal-title">Chat</h2>
+        <div className="mensagens-container">
+          {mensagens.map((msg, index) => (
+            <div key={index} className="mensagem">
+              <span className="remetente">{msg.remetente}:</span>{" "}
+              <span className="texto">{msg.texto}</span>
+            </div>
+          ))}
+        </div>
+        <div className="campo-mensagem">
+          <input
+            type="text"
+            className="modal-input"
+            value={mensagem}
+            onChange={(e) => setMensagem(e.target.value)}
+            placeholder="Digite sua mensagem..."
+          />
+          <button className="modal-button" onClick={handleEnviarMensagem}>
+            Enviar
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default Chat;

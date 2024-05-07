@@ -1,17 +1,16 @@
 import { useState } from "react";
-import FormularioInteresse from "./FormularioInteresse";
+import Chat from "./Chat";
 import "./styles.css";
 
 function Anuncio({ anuncio }) {
-  const [mostrarFormulario, setMostrarFormulario] = useState(false);
+  const [mostrarChat, setMostrarChat] = useState(false);
 
-  const handleInteresseClick = () => {
-    setMostrarFormulario(true);
+  const handleChatClick = () => {
+    setMostrarChat(true);
   };
 
-  const handleFormSubmit = (interesse) => {
-    console.log("Interesse enviado:", interesse);
-    setMostrarFormulario(false);
+  const handleChatSubmit = (mensagem) => {
+    console.log("Mensagem enviada:", mensagem);
   };
 
   return (
@@ -27,14 +26,14 @@ function Anuncio({ anuncio }) {
       )}
       <p className="anuncio-description">Descrição: {anuncio.descricao}</p>
       <p className="anuncio-location">Localização: {anuncio.localizacao}</p>
-      {mostrarFormulario ? (
-        <FormularioInteresse
-          onSubmeter={handleFormSubmit}
-          onClose={() => setMostrarFormulario(false)}
+      {mostrarChat ? (
+        <Chat
+          onSubmeter={handleChatSubmit}
+          onClose={() => setMostrarChat(false)}
         />
       ) : (
-        <button onClick={handleInteresseClick} className="anuncio-button">
-          Tenho Interesse
+        <button onClick={handleChatClick} className="anuncio-button">
+          Abrir Chat
         </button>
       )}
     </div>
