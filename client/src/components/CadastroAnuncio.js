@@ -29,17 +29,19 @@ function CadastroAnuncio({ setAnuncios, closeModal }) {
     e.preventDefault();
 
     const formData = new FormData(form.current);
-
-    console.log("formdata", formData.get("titulo"));
-    console.log("titulo", titulo);
+    const titulo = formData.get("titulo");
+    const descricao = formData.get("descricao");
+    const localizacao = formData.get("localizacao");
+    const imagem = formData.get("imagem");
 
     try {
       const response = await axios.post("http://localhost:3001/api/anuncios", {
-        titulo: formData.get("titulo"),
-        descricao: formData.get("descricao"),
-        localizacao: formData.get("localizacao"),
-        // imagem: formData.get("imagem"),
+        titulo,
+        descricao,
+        localizacao,
+        imagem: imagem.name,
       });
+      console.log(imagem.name);
 
       if (response.status === 201) {
         closeModal();

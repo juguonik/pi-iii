@@ -202,7 +202,7 @@ app.post("/api/anuncios", (req, res) => {
 
   db.query(
     "INSERT INTO anuncios (titulo, descricao, localizacao, imagemMiniatura) VALUES (?, ?, ?, ?)",
-    [titulo, descricao, localizacao, imagem],
+    [titulo, descricao, localizacao, novoAnuncio.imagemMiniatura],
     (err, result) => {
       if (err) {
         console.error("Erro ao inserir anúncio no banco de dados:", err);
