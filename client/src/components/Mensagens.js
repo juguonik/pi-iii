@@ -50,8 +50,13 @@ function Mensagens({
 
   // Função para agrupar as mensagens por remetente
   const agruparMensagensPorRemetente = (mensagens) => {
+    const todasAsMensagens = [...mensagens]; // Inicia com as mensagens locais
+    if (Array.isArray(mensagensChat)) {
+      // Verifica se mensagensChat é um array
+      todasAsMensagens.push(...mensagensChat); // Concatena mensagens locais e do chat
+    }
     const mensagensAgrupadas = {};
-    mensagens.forEach((mensagem) => {
+    todasAsMensagens.forEach((mensagem) => {
       const remetente = mensagem.remetente;
       if (!mensagensAgrupadas[remetente]) {
         mensagensAgrupadas[remetente] = [];
@@ -90,22 +95,22 @@ function Mensagens({
           </div>
         ) : (
           <div className="mensagens-lista">
-            {Object.entries(
-              agruparMensagensPorRemetente([...mensagens, ...mensagensChat])
-            ).map(([remetente, mensagensDoRemetente]) => (
-              <div key={remetente}>
-                <div className="remetente">{remetente}</div>
-                {mensagensDoRemetente.map((mensagem, index) => (
-                  <div
-                    key={index}
-                    className="mensagem"
-                    onClick={() => handleSelecionarMensagem(mensagem)}
-                  >
-                    <div className="texto">{mensagem.texto}</div>
-                  </div>
-                ))}
-              </div>
-            ))}
+            {Object.entries(agruparMensagensPorRemetente(mensagens)).map(
+              ([remetente, mensagensDoRemetente]) => (
+                <div key={remetente}>
+                  <div className="remetente">{remetente}</div>
+                  {mensagensDoRemetente.map((mensagem, index) => (
+                    <div
+                      key={index}
+                      className="mensagem"
+                      onClick={() => handleSelecionarMensagem(mensagem)}
+                    >
+                      <div className="texto">{mensagem.texto}</div>
+                    </div>
+                  ))}
+                </div>
+              )
+            )}
           </div>
         )}
       </div>

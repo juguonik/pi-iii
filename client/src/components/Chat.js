@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import "./styles.css";
 
-function Chat({ isOpen, onClose, onSubmeter }) {
+function Chat({ isOpen, onClose, onSubmeter, onNovaMensagem }) {
   const [mensagem, setMensagem] = useState("");
   const [mensagens, setMensagens] = useState([]);
   const chatRef = useRef(null);
@@ -15,6 +15,7 @@ function Chat({ isOpen, onClose, onSubmeter }) {
 
       setMensagens([...mensagens, novaMensagem]);
       onSubmeter(novaMensagem);
+      onNovaMensagem(novaMensagem); // Chame a função onNovaMensagem aqui
 
       setMensagem("");
     }

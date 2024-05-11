@@ -11,7 +11,7 @@ function Feed() {
   const [anunciosExibidos, setAnunciosExibidos] = useState(anuncios);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [mensagens, setMensagens] = useState([]);
-  const [mensagensChat, setMensagensChat] = useState([]); // Novo estado para armazenar mensagens do chat
+  const [mensagensChat, setMensagensChat] = useState([]);
   const [showMessagesModal, setShowMessagesModal] = useState(false);
 
   const adicionarAnuncio = (anuncios) => {
@@ -50,8 +50,9 @@ function Feed() {
 
   const handleNovaMensagemChat = (mensagem) => {
     setMensagensChat([...mensagensChat, mensagem]);
-    handleNovaMensagem(mensagem);
   };
+
+  console.log("mensagens", mensagens, mensagensChat);
 
   useEffect(() => {
     try {
@@ -98,13 +99,13 @@ function Feed() {
       )}
 
       <Mensagens
-        mensagens={mensagens} // Estado global de mensagens
-        mensagensChat={mensagensChat} // Mensagens do chat
+        mensagens={mensagens}
+        mensagensChat={mensagensChat}
         onClose={handleCloseMensagens}
         onResponder={handleResponder}
         isOpen={showMessagesModal}
         onCloseModal={() => setShowMessagesModal(false)}
-        onNovaMensagem={handleNovaMensagemChat} // Passa a função de adicionar mensagem do chat
+        onNovaMensagem={handleNovaMensagemChat}
       />
 
       <div className="feed-search">
@@ -120,7 +121,11 @@ function Feed() {
         </button>
       </div>
       {(anunciosExibidos || anuncios).map((anuncio, index) => (
-        <Anuncio key={index} anuncio={anuncio} />
+        <Anuncio
+          key={index}
+          anuncio={anuncio}
+          onNovaMensagemChat={handleNovaMensagemChat}
+        />
       ))}
     </div>
   );

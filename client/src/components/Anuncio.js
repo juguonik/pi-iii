@@ -2,7 +2,7 @@ import { useState } from "react";
 import Chat from "./Chat";
 import "./styles.css";
 
-function Anuncio({ anuncio }) {
+function Anuncio({ anuncio, onNovaMensagemChat }) {
   const [mostrarChat, setMostrarChat] = useState(false);
 
   const handleChatClick = () => {
@@ -11,6 +11,10 @@ function Anuncio({ anuncio }) {
 
   const handleChatSubmit = (mensagem) => {
     console.log("Mensagem enviada:", mensagem);
+  };
+
+  const handleNovaMensagemChat = (mensagem) => {
+    onNovaMensagemChat(mensagem);
   };
 
   return (
@@ -30,6 +34,7 @@ function Anuncio({ anuncio }) {
         <Chat
           onSubmeter={handleChatSubmit}
           onClose={() => setMostrarChat(false)}
+          onNovaMensagem={handleNovaMensagemChat}
         />
       ) : (
         <button onClick={handleChatClick} className="anuncio-button">
