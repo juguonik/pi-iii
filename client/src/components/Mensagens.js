@@ -1,30 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./styles.css";
 
-function Mensagens() {
-  const [mostrarMensagens, setMostrarMensagens] = useState(false);
+function Mensagens({
+  mensagens,
+  mensagensChat,
+  onClose,
+  onResponder,
+  isOpen,
+  onCloseModal,
+}) {
   const [mensagemSelecionada, setMensagemSelecionada] = useState(null);
   const [resposta, setResposta] = useState("");
-  const [mensagensLocais] = useState([
-    {
-      id: 1,
-      anuncioTitulo: "Anúncio 1",
-      remetente: "Usuário 1",
-      texto: "Mensagem 1",
-    },
-    {
-      id: 2,
-      anuncioTitulo: "Anúncio 2",
-      remetente: "Usuário 2",
-      texto: "Mensagem 2",
-    },
-    {
-      id: 3,
-      anuncioTitulo: "Anúncio 3",
-      remetente: "Usuário 1",
-      texto: "Mensagem 3",
-    },
-  ]);
 
   const handleSelecionarMensagem = (mensagem) => {
     setMensagemSelecionada(mensagem);
@@ -32,70 +18,99 @@ function Mensagens() {
 
   const handleCloseMensagens = () => {
     setMensagemSelecionada(null);
-    setMostrarMensagens(false);
+    onClose();
   };
 
   const handleResponder = () => {
-    // Aqui você pode implementar a lógica para enviar a resposta
-    alert(`Resposta para "${mensagemSelecionada.texto}": ${resposta}`);
+    onResponder(mensagemSelecionada, resposta);
     setResposta("");
   };
 
-  return (
-    <div className="container">
-      <button
-        className="minhas-mensagens-button"
-        onClick={() => setMostrarMensagens(true)}
-      >
-        Minhas Mensagens
-      </button>
-      {mostrarMensagens && (
-        <div className="mensagens-container">
-          {mensagemSelecionada ? (
-            <div className="detalhes-mensagem">
-              <div className="mensagem-detalhes">
-                <div className="mensagem-remetente">
-                  {mensagemSelecionada.remetente}
-                </div>
-                <div className="mensagem-texto">
-                  {mensagemSelecionada.texto}
-                </div>
-                <form onSubmit={handleResponder}>
-                  <textarea
-                    value={resposta}
-                    onChange={(e) => setResposta(e.target.value)}
-                    placeholder="Digite sua resposta..."
-                  />
-                  <button type="submit">Responder</button>
-                </form>
+  useEffect(() => {
+    const handleEscKey = (event) => {
+      if (event.key === "Escape") {
+        onCloseModal();
+      }
+    };
+
+    const handleClickOutside = (event) => {
+      if (event.target.classList.contains("modal-container")) {
+        onCloseModal();
+      }
+    };
+
+    document.addEventListener("keydown", handleEscKey);
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("keydown", handleEscKey);
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [onCloseModal]);
+
+  // Função para agrupar as mensagens por remetente
+  const agruparMensagensPorRemetente = (mensagens) => {
+    const mensagensAgrupadas = {};
+    mensagens.forEach((mensagem) => {
+      const remetente = mensagem.remetente;
+      if (!mensagensAgrupadas[remetente]) {
+        mensagensAgrupadas[remetente] = [];
+      }
+      mensagensAgrupadas[remetente].push(mensagem);
+    });
+    return mensagensAgrupadas;
+  };
+
+  return isOpen ? (
+    <div className="modal-container">
+      <div className="modal-content mensagens">
+        <h2 className="modal-title">Minhas Mensagens</h2>
+        {mensagemSelecionada ? (
+          <div className="detalhes-mensagem">
+            <div className="mensagem-detalhes">
+              <div className="mensagem-remetente">
+                {mensagemSelecionada.remetente}
               </div>
-              <button
-                className="fechar-mensagens-button"
-                onClick={handleCloseMensagens}
-              >
-                Fechar
-              </button>
+              <div className="mensagem-texto">{mensagemSelecionada.texto}</div>
+              <form onSubmit={handleResponder}>
+                <textarea
+                  value={resposta}
+                  onChange={(e) => setResposta(e.target.value)}
+                  placeholder="Digite sua resposta..."
+                />
+                <button type="submit">Responder</button>
+              </form>
             </div>
-          ) : (
-            <div className="mensagens-lista">
-              {mensagensLocais.map((mensagem) => (
-                <div
-                  key={mensagem.id}
-                  className="mensagem"
-                  onClick={() => handleSelecionarMensagem(mensagem)}
-                >
-                  <div className="remetente">{mensagem.remetente}</div>
-                  <div className="texto">
-                    Mensagem do usuário {mensagem.remetente}
+            <button
+              className="fechar-mensagens-button"
+              onClick={handleCloseMensagens}
+            >
+              Fechar
+            </button>
+          </div>
+        ) : (
+          <div className="mensagens-lista">
+            {Object.entries(
+              agruparMensagensPorRemetente([...mensagens, ...mensagensChat])
+            ).map(([remetente, mensagensDoRemetente]) => (
+              <div key={remetente}>
+                <div className="remetente">{remetente}</div>
+                {mensagensDoRemetente.map((mensagem, index) => (
+                  <div
+                    key={index}
+                    className="mensagem"
+                    onClick={() => handleSelecionarMensagem(mensagem)}
+                  >
+                    <div className="texto">{mensagem.texto}</div>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+                ))}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
-  );
+  ) : null;
 }
 
 export default Mensagens;

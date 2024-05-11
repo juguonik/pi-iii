@@ -142,3 +142,23 @@ body {
   padding: 8px 16px;
   cursor: pointer;
 }
+
+.sender-messages {
+  margin-bottom: 10px;
+}
+
+.sender-header {
+  background-color: var(--primary-color);
+  color: #fff;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.sender-messages-content {
+  display: none;
+  padding-left: 20px;
+}
+
+.sender-messages-content.show {
+  display: block;
+}

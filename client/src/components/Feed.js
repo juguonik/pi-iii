@@ -1,4 +1,3 @@
-"use client";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import Anuncio from "./Anuncio";
@@ -11,6 +10,9 @@ function Feed() {
   const [filtro, setFiltro] = useState("");
   const [anunciosExibidos, setAnunciosExibidos] = useState(anuncios);
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [mensagens, setMensagens] = useState([]);
+  const [mensagensChat, setMensagensChat] = useState([]); // Novo estado para armazenar mensagens do chat
+  const [showMessagesModal, setShowMessagesModal] = useState(false);
 
   const adicionarAnuncio = (anuncios) => {
     setAnuncios(anuncios);
@@ -37,6 +39,21 @@ function Feed() {
     setModalIsOpen(false);
   };
 
+  const handleCloseMensagens = () => {
+    setMensagens([]);
+    setShowMessagesModal(false);
+  };
+
+  const handleResponder = (mensagem) => {
+    setMensagens([...mensagens, mensagem]);
+  };
+
+  // Função para adicionar mensagens do chat localmente
+  const handleNovaMensagemChat = (mensagem) => {
+    setMensagensChat([...mensagensChat, mensagem]);
+    handleNovaMensagem(mensagem); // Adiciona a nova mensagem ao estado global de mensagens
+  };
+
   useEffect(() => {
     try {
       axios.get("http://localhost:3001/api/anuncios").then((response) => {
@@ -45,8 +62,21 @@ function Feed() {
       });
     } catch (error) {
       console.error("Erro ao carregar anúncios:", error);
-      return [];
     }
+  }, []);
+
+  useEffect(() => {
+    const handleEscKey = (event) => {
+      if (event.key === "Escape") {
+        setShowMessagesModal(false);
+      }
+    };
+
+    document.addEventListener("keydown", handleEscKey);
+
+    return () => {
+      document.removeEventListener("keydown", handleEscKey);
+    };
   }, []);
 
   return (
@@ -55,13 +85,28 @@ function Feed() {
       <button onClick={openModal} className="feed-button">
         Cadastrar Anúncio
       </button>
+      <button
+        onClick={() => setShowMessagesModal(true)}
+        className="feed-button"
+      >
+        Minhas Mensagens
+      </button>
       {modalIsOpen && (
         <CadastroAnuncio
           setAnuncios={adicionarAnuncio}
           closeModal={closeModal}
         />
       )}
-      <Mensagens />
+
+      <Mensagens
+        mensagens={mensagens} // Estado global de mensagens
+        mensagensChat={mensagensChat} // Mensagens do chat
+        onClose={handleCloseMensagens}
+        onResponder={handleResponder}
+        isOpen={showMessagesModal}
+        onCloseModal={() => setShowMessagesModal(false)}
+        onNovaMensagem={handleNovaMensagemChat} // Passa a função de adicionar mensagem do chat
+      />
 
       <div className="feed-search">
         <input

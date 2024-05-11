@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import "./styles.css";
 
-function Chat({ onClose, onSubmeter }) {
+function Chat({ isOpen, onClose, onSubmeter }) {
   const [mensagem, setMensagem] = useState("");
   const [mensagens, setMensagens] = useState([]);
   const chatRef = useRef(null);
@@ -9,20 +9,30 @@ function Chat({ onClose, onSubmeter }) {
   const handleEnviarMensagem = () => {
     if (mensagem.trim() !== "") {
       const novaMensagem = {
-        remetente: "usuário", // Aqui você pode definir o remetente como desejar
+        remetente: "usuário",
         texto: mensagem,
       };
 
-      // Adiciona a nova mensagem à lista de mensagens
       setMensagens([...mensagens, novaMensagem]);
-
-      // Chama a função para submeter a mensagem
       onSubmeter(novaMensagem);
 
-      // Limpa o campo de mensagem
       setMensagem("");
     }
   };
+
+  useEffect(() => {
+    const handleEscKey = (event) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
+
+    document.addEventListener("keydown", handleEscKey);
+
+    return () => {
+      document.removeEventListener("keydown", handleEscKey);
+    };
+  }, [onClose]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -39,7 +49,7 @@ function Chat({ onClose, onSubmeter }) {
   }, [onClose]);
 
   return (
-    <div className="modal-container">
+    <div className={`modal-container ${isOpen ? "open" : ""}`}>
       <div className="modal-content chat" ref={chatRef}>
         <h2 className="modal-title">Chat</h2>
         <div className="mensagens-container">
