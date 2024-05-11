@@ -22,7 +22,7 @@ function Anuncio({ anuncio, onNovaMensagemChat }) {
       <h2 className="anuncio-title">{anuncio.titulo}</h2>
       {anuncio.imagemMiniatura && (
         <img
-          src={anuncio.imagemMiniatura}
+          src={"http://localhost:3001" + anuncio.imagemMiniatura}
           alt="Miniatura da Imagem"
           className="anuncio-img"
           style={{ maxWidth: "100px", maxHeight: "100px" }}
