@@ -48,10 +48,9 @@ function Feed() {
     setMensagens([...mensagens, mensagem]);
   };
 
-  // Função para adicionar mensagens do chat localmente
   const handleNovaMensagemChat = (mensagem) => {
     setMensagensChat([...mensagensChat, mensagem]);
-    handleNovaMensagem(mensagem); // Adiciona a nova mensagem ao estado global de mensagens
+    handleNovaMensagem(mensagem);
   };
 
   useEffect(() => {

@@ -4,19 +4,13 @@ import "./styles.css";
 
 function Anuncio({ anuncio }) {
   const [mostrarChat, setMostrarChat] = useState(false);
-  const [mensagens, setMensagens] = useState([]);
-
-  const handleClose = () => {
-    setMostrarChat(false);
-  };
-
-  const handleSubmit = (mensagem) => {
-    setMensagens([...mensagens, mensagem]);
-    console.log("Submetido:", mensagem);
-  };
 
   const handleChatClick = () => {
     setMostrarChat(true);
+  };
+
+  const handleChatSubmit = (mensagem) => {
+    console.log("Mensagem enviada:", mensagem);
   };
 
   return (
@@ -34,9 +28,8 @@ function Anuncio({ anuncio }) {
       <p className="anuncio-location">Localização: {anuncio.localizacao}</p>
       {mostrarChat ? (
         <Chat
-          onClose={handleClose}
-          onSubmeter={handleSubmit}
-          mensagens={mensagens}
+          onSubmeter={handleChatSubmit}
+          onClose={() => setMostrarChat(false)}
         />
       ) : (
         <button onClick={handleChatClick} className="anuncio-button">
