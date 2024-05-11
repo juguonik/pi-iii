@@ -35,13 +35,24 @@ function CadastroAnuncio({ setAnuncios, closeModal }) {
     const imagem = formData.get("imagem");
 
     try {
+      const responseUpload = await axios.post(
+        "http://localhost:3001/api/upload",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      const imagemPath = responseUpload.data.imagemPath;
+
       const response = await axios.post("http://localhost:3001/api/anuncios", {
         titulo,
         descricao,
         localizacao,
-        imagem: imagem.name,
+        imagem: imagemPath,
       });
-      console.log(imagem.name);
 
       if (response.status === 201) {
         closeModal();
@@ -50,7 +61,6 @@ function CadastroAnuncio({ setAnuncios, closeModal }) {
         setLocalizacao("");
         setImagem(null);
 
-        // Após o cadastro, carregamos os anúncios novamente para atualizar a lista
         const anuncios = await carregarAnuncios();
         setAnuncios(anuncios);
       }
