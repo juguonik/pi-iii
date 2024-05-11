@@ -9,13 +9,13 @@ function Chat({ isOpen, onClose, onSubmeter, onNovaMensagem }) {
   const handleEnviarMensagem = () => {
     if (mensagem.trim() !== "") {
       const novaMensagem = {
-        remetente: "usuário",
+        remetente: "Teste",
         texto: mensagem,
       };
 
       setMensagens([...mensagens, novaMensagem]);
       onSubmeter(novaMensagem);
-      onNovaMensagem(novaMensagem); // Chame a função onNovaMensagem aqui
+      onNovaMensagem(novaMensagem);
 
       setMensagem("");
     }

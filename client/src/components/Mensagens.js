@@ -11,6 +11,11 @@ function Mensagens({
 }) {
   const [mensagemSelecionada, setMensagemSelecionada] = useState(null);
   const [resposta, setResposta] = useState("");
+  const [usuarioSelecionado, setUsuarioSelecionado] = useState(null);
+
+  const handleSelecionarUsuario = (usuario) => {
+    setUsuarioSelecionado(usuario === usuarioSelecionado ? null : usuario);
+  };
 
   const handleSelecionarMensagem = (mensagem) => {
     setMensagemSelecionada(mensagem);
@@ -22,7 +27,14 @@ function Mensagens({
   };
 
   const handleResponder = () => {
+    // Enviar a resposta para o componente pai
     onResponder(mensagemSelecionada, resposta);
+    // Adicionar a resposta à lista de mensagens
+    setMensagens((prevMensagens) => [
+      ...prevMensagens,
+      { remetente: "usuário", texto: resposta },
+    ]);
+    // Limpar o campo de resposta
     setResposta("");
   };
 
@@ -98,16 +110,22 @@ function Mensagens({
             {Object.entries(agruparMensagensPorRemetente(mensagens)).map(
               ([remetente, mensagensDoRemetente]) => (
                 <div key={remetente}>
-                  <div className="remetente">{remetente}</div>
-                  {mensagensDoRemetente.map((mensagem, index) => (
-                    <div
-                      key={index}
-                      className="mensagem"
-                      onClick={() => handleSelecionarMensagem(mensagem)}
-                    >
-                      <div className="texto">{mensagem.texto}</div>
-                    </div>
-                  ))}
+                  <div
+                    className="remetente"
+                    onClick={() => handleSelecionarUsuario(remetente)}
+                  >
+                    {remetente}
+                  </div>
+                  {usuarioSelecionado === remetente &&
+                    mensagensDoRemetente.map((mensagem, index) => (
+                      <div
+                        key={index}
+                        className="mensagem"
+                        onClick={() => handleSelecionarMensagem(mensagem)}
+                      >
+                        <div className="texto">{mensagem.texto}</div>
+                      </div>
+                    ))}
                 </div>
               )
             )}

@@ -110,7 +110,7 @@ body {
   margin-bottom: 20px;
 }
 
-.feed-button {
+.feed-button-cadastrar {
   background-color: var(--accent-color); /* Cor de destaque */
   color: #fff;
   border: none;
@@ -118,6 +118,17 @@ body {
   padding: 10px 20px;
   margin-bottom: 20px;
   cursor: pointer;
+}
+
+.feed-button-msgs {
+  background-color: var(--accent-color); /* Cor de destaque */
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  margin-bottom: 20px;
+  cursor: pointer;
+  margin-left: 20px;
 }
 
 .feed-search {
@@ -143,22 +154,57 @@ body {
   cursor: pointer;
 }
 
-.sender-messages {
-  margin-bottom: 10px;
+.modal-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.sender-header {
-  background-color: var(--primary-color);
-  color: #fff;
-  padding: 5px 10px;
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+}
+
+.modal-title {
+  margin-top: 0;
+}
+
+.mensagens-lista {
+  overflow-y: auto;
+  max-height: 300px;
+}
+
+.remetente {
   cursor: pointer;
+  font-weight: bold;
+  margin-bottom: 8px;
 }
 
-.sender-messages-content {
-  display: none;
-  padding-left: 20px;
+.mensagem {
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  margin-bottom: 4px;
+  background-color: #f0f0f0;
 }
 
-.sender-messages-content.show {
-  display: block;
+.mensagem:hover {
+  background-color: #e0e0e0;
+}
+
+.detalhes-mensagem {
+  margin-top: 16px;
+}
+
+.fechar-mensagens-button {
+  margin-top: 16px;
 }

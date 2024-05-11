@@ -82,12 +82,12 @@ function Feed() {
   return (
     <div>
       <h1 className="feed-header">Anúncios</h1>
-      <button onClick={openModal} className="feed-button">
+      <button onClick={openModal} className="feed-button-cadastrar">
         Cadastrar Anúncio
       </button>
       <button
         onClick={() => setShowMessagesModal(true)}
-        className="feed-button"
+        className="feed-button-msgs"
       >
         Minhas Mensagens
       </button>
